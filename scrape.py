@@ -44,8 +44,9 @@ while page != 1001:
     
     page += 50
 
-episodes_DF = pd.DataFrame({'Show Name': series_name, 'Episode Name': episode_name, 'Genre(s)': genre, "Watchtime (Min)": runtime, 'Year of Release': year, 
+episodes_DF = pd.DataFrame({'Show Name': series_name, 'Episode Name': episode_name, 'Genre(s)': genre, "Watchtime (Min)": time, 'Year of Release': year, 
 'Episode Rating': rating, 'Votes': votes})
+
 episodes_DF.to_csv('episodes.csv')
 
 print(episodes_DF)
