@@ -3,6 +3,10 @@ import requests
 from bs4 import BeautifulSoup
 import numpy as np
 
+import pymongo
+
+client = pymongo.MongoClient("mongodb://localhost:27017")
+
 page = 1
 
 series_name = []
@@ -12,7 +16,6 @@ year = []
 time = []
 rating = []
 votes = []
-
 
 while page != 1001:
     url = f"https://www.imdb.com/search/title/?title_type=tv_episode&num_votes=1000,&sort=user_rating,desc&start={page}&ref_=adv_nxt"
@@ -47,7 +50,13 @@ while page != 1001:
 episodes_DF = pd.DataFrame({'Show Name': series_name, 'Episode Name': episode_name, 'Genre(s)': genre, "Watchtime (Min)": time, 'Year of Release': year, 
 'Episode Rating': rating, 'Votes': votes})
 
-episodes_DF.to_csv('episodes.csv')
 
-print(episodes_DF)
+episodes_DF.to_csv('episodes.csv', index=False)
 
+df = pd.read_csv('episodes.csv')
+
+data = df.to_dict(orient = "records")
+
+db = client["TopEpisodes"]
+
+db.episodes.insert_many(data)
