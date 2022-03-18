@@ -15,7 +15,7 @@ client = pymongo.MongoClient("mongodb://localhost:27017")
 url = "https://www.imdb.com/search/title/?title_type=tv_episode&num_votes=600,&sort=user_rating,desc"
 
 # declare the features which will be extracted from IMDB
-
+rank = []
 series_name = []
 episode_name = []
 genre = []
@@ -41,7 +41,12 @@ while True:
 
     for store in episode_data:
         # define h3 as the h3 element to avoid redundancy
+
         h3=store.find('h3', attrs={'class': 'lister-item-header'})
+        
+        ranks = h3.find('span', class_ = 'lister-item-index unbold text-primary').text.replace('.', '')
+        rank.append(ranks)
+
         sName =h3.findAll('a')[0].text.strip()
         series_name.append(sName)
         eName = h3.findAll('a')[1].text
@@ -84,7 +89,7 @@ while True:
 
 # convert all the data gathered to a dataframe using the pandas library
 
-episodes_DF = pd.DataFrame({'Show Name': series_name, 'Episode Name': episode_name, "Genre": genre, 
+episodes_DF = pd.DataFrame({'Rank': rank,'Show Name': series_name, 'Episode Name': episode_name, "Genre": genre, 
 "Watchtime (Min)": times, 'Year of Release': year, 'Episode Rating': rating, 'Votes': votes})
 
 # since genre column has multiple genre's, we split up each genre into seperate columns
@@ -97,9 +102,9 @@ episodes_DF.drop('Genre', inplace = True, axis = 1)
 
 # convert dataframe to csv file
 
-episodes_DF.to_csv('episodes.csv', index=False)
+episodes_DF.to_csv('NewEpisodes.csv', index=False)
 
-df = pd.read_csv('episodes.csv')
+df = pd.read_csv('NewEpisodes.csv')
 
 # convert the data frame to a dictionary to allow it to be inserted into database
 
@@ -107,7 +112,7 @@ data = df.to_dict(orient = "records")
 
 # Create a database in Mongo called TopEpisodes to store the dataframe
 
-db = client["TopEpisodes"]
+db = client["NewTopEpisodes"]
 
 # create a collection called episodes and insert all the data into the database
 
