@@ -18,7 +18,7 @@ hadoop fs -put CleanEpisodes.csv hdfs://namenode:8020/user/hive/data/episodesdb.
 
 hive
 
-use episodedb
+use episodedb;
 
 ALTER TABLE episode
 SET TBLPROPERTIES ("skip.header.line.count"="1");
@@ -26,5 +26,5 @@ SET TBLPROPERTIES ("skip.header.line.count"="1");
 select * from episode limit 10;
 
 
-Now the docker image should be initialised onto your systme
+Now the docker image should be initialised onto your system!
 
