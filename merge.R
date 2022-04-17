@@ -3,7 +3,9 @@ library(rvest)
 library(dplyr)
 
 df1 = read.csv('NewEpisodes.csv', head = T)
+dput(df1)
 df2 = read.csv('episodesReview.csv', head = T, )
+dput(df2)
 df2 = df2[, c("Episode.Name", "Show.Name", "Episode.Review")]
 
 newDF = merge(df1, df2, by = c("Episode.Name", "Show.Name"), all.x = TRUE)
