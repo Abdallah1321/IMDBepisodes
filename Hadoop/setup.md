@@ -4,27 +4,45 @@ First open terminal to where the files are.
 
 Execute commands in this order:
 
+```
 docker-compose up -d
+```
 
+```
 docker exec -it hive-server /bin/bash
+```
 
+```
 cd ..
+```
 
+```
 cd episode
+```
 
+```
 hive -f episode_table.hql
+```
 
+```
 hadoop fs -put CleanEpisodes.csv hdfs://namenode:8020/user/hive/data/episodesdb.db/episode
+```
 
+```
 hive
+```
 
-use episodedb;
+```
+use episodesdb;
+```
 
+```
 ALTER TABLE episode
 SET TBLPROPERTIES ("skip.header.line.count"="1");
+```
 
+```
 select * from episode limit 10;
-
+```
 
 Now the docker image should be initialised onto your system!
-
