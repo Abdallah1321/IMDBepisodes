@@ -1,4 +1,3 @@
-
 import dash
 from dash import Dash, html, dcc, Input, Output
 import plotly.graph_objs as go
