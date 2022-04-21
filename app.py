@@ -1,13 +1,18 @@
 import dash
-from dash import Dash, html, dcc, Input, Output
+from dash import Dash, html, dcc, Input, Output, dash_table
 import plotly.graph_objs as go
+import plotly.express as px
 import pandas as pd
+import dash_bootstrap_components as dbc
 
 df = pd.read_csv("test.csv")
 
+df['id'] = df['show_name']
+df.set_index('id', inplace=True, drop=False)
+
 variable_labels = {
-    'episode_rating': 'Numeric Rating',
-    'votes': 'Number of user reviews',
+    'episode_rating': 'Episode Rating (out of 10)',
+    'votes': 'Number of user votes',
     'year_of_release': 'Year of release',
     'watchtime_min': 'Length (minutes)'
 }
@@ -64,6 +69,14 @@ app.layout = html.Div([
             ],
             multi=False
         ),
+        html.Br(),
+        html.Label('Pick a show name'),
+        dcc.Dropdown(
+            id='showname-dropdown',
+            options = 
+                sorted([{'label': show, 'value': show} for show in df.show_name.unique()], key = lambda x: x['label'])
+            
+        )
     ], style={'marginLeft': 25, 'marginRight': 25}
     ),
     html.Div([
@@ -120,7 +133,49 @@ app.layout = html.Div([
         ),
         html.Br(),
         html.P('Number of rows selected: {}'.format(len(df.index)), id='dataset-rows-p')
-    ], style = {'marginLeft': 25, 'marginRight': 25})
+    ], style = {'marginLeft': 25, 'marginRight': 25}),
+    html.Div([
+        dash_table.DataTable(
+            id='datatable-interactivity',
+            columns=[
+                {"name": i, "id": i, "deletable": True, "selectable": True, "hideable": True}
+                if i == "show_name" or i == "id"
+                else {"name": i, "id": i, "deletable": True, "selectable": True }
+                for i in df.columns
+            ],
+            data = df.to_dict('records'),
+            editable = True,
+            filter_action= "native",
+            sort_action = "native",
+            sort_mode = "single",
+            column_selectable="multi",
+            row_selectable="multi",
+            row_deletable=True,
+            selected_columns = [],
+            selected_rows = [],
+            page_action="native",
+            page_current=0,
+            page_size = 20,
+            style_cell={
+                'minWidth': 95, 'maxWidth': 95, 'width': 95
+            },
+            style_cell_conditional=[
+                {
+                'if': {'column_id': s},
+                'textAlign': 'left'
+                } for s in ['show_name']
+            ],
+            style_data={
+                'whitespace': 'normal',
+                'height': 'auto'
+            }
+        ),
+
+        html.Br(),
+        html.Br(),
+        html.Div(id='bar-container'),
+        html.Div(id = 'choromap-container')
+    ])
 ])
 
 @app.callback(
@@ -131,26 +186,29 @@ app.layout = html.Div([
         dash.dependencies.Input('genre1-dropdown', 'value'),
         dash.dependencies.Input('genre2-dropdown', 'value'),
         dash.dependencies.Input('genre3-dropdown', 'value'),
+        dash.dependencies.Input('showname-dropdown', 'value'),
         dash.dependencies.Input('x-axis-dropdown', 'value'),
         dash.dependencies.Input('y-axis-dropdown', 'value')
     ]
 )
 def update_scatter_plot(selected_vote_count, selected_year_of_release, selected_genre1, selected_genre2,
-                        selected_genre3, x_axis_var, y_axis_var):
+                        selected_genre3, selected_show,x_axis_var, y_axis_var):
     nb_reviews = selected_vote_count or df.votes.min()
     year_of_release_min, year_of_release_max = selected_year_of_release or (df.year_of_release.min(), df.year_of_release.max())
     primary_genre = selected_genre1 or None
     secondary_genre = selected_genre2 or None
     tertiary_genre = selected_genre3 or None
+    show_name = selected_show or None
     x_axis = x_axis_var or 'Rating'
     y_axis = y_axis_var or 'Votes'
 
     filtered_df = (
         df.pipe(lambda df: df[df['votes'] >= nb_reviews])
         .pipe(lambda df: df[(df['year_of_release'] >= year_of_release_min) & (df['year_of_release'] <= year_of_release_max)])
-        .pipe(lambda df: df[df['genre_1'].str.contains(primary_genre)] if primary_genre else df)
-        .pipe(lambda df: df[df['genre_2'].str.contains(secondary_genre)] if secondary_genre else df)
-        .pipe(lambda df: df[df['genre_3'].str.contains(tertiary_genre)] if tertiary_genre else df)
+        .pipe(lambda df: df[df['genre_1'].str.contains(primary_genre, na=False)] if primary_genre else df)
+        .pipe(lambda df: df[df['genre_2'].str.contains(secondary_genre, na=False)] if secondary_genre else df)
+        .pipe(lambda df: df[df['genre_3'].str.contains(tertiary_genre, na=False)] if tertiary_genre else df)
+        .pipe(lambda df: df[df['show_name'].str.contains(show_name)] if show_name else df)
     )
 
     return {
@@ -159,7 +217,7 @@ def update_scatter_plot(selected_vote_count, selected_year_of_release, selected_
                 x=filtered_df[x_axis],
                 y=filtered_df[y_axis],
 # COME BACK HERE BECAUSE WEIRD ERROR
-                text = filtered_df['episode_name'],
+                text=filtered_df.show_name + ", " + filtered_df.episode_name,
                 mode = 'markers',
                 opacity = 0.5,
                 marker = {
@@ -197,30 +255,35 @@ def update_scatter_plot(selected_vote_count, selected_year_of_release, selected_
         dash.dependencies.Input('genre1-dropdown', 'value'),
         dash.dependencies.Input('genre2-dropdown', 'value'),
         dash.dependencies.Input('genre3-dropdown', 'value'),
+        dash.dependencies.Input('showname-dropdown', 'value'),
         dash.dependencies.Input('x-axis-dropdown', 'value'),
         dash.dependencies.Input('y-axis-dropdown', 'value')
     ]
 )
 
-def update_scatter_plot(selected_vote_count, selected_year_of_release, selected_genre1, selected_genre2,
-                        selected_genre3, x_axis_var, y_axis_var):
+def update_row_count(selected_vote_count, selected_year_of_release, selected_genre1, selected_genre2,
+                        selected_genre3, selected_show, x_axis_var, y_axis_var):
     nb_reviews = selected_vote_count or df.votes.min()
     year_of_release_min, year_of_release_max = selected_year_of_release or (df.year_of_release.min(), df.year_of_release.max())
     primary_genre = selected_genre1 or None
     secondary_genre = selected_genre2 or None
     tertiary_genre = selected_genre3 or None
+    show_name = selected_show or None
     x_axis = x_axis_var or 'Rating'
     y_axis = y_axis_var or 'Votes'
 
     filtered_df = (
         df.pipe(lambda df: df[df['votes'] >= nb_reviews])
         .pipe(lambda df: df[(df['year_of_release'] >= year_of_release_min) & (df['year_of_release'] <= year_of_release_max)])
-        .pipe(lambda df: df[df['genre_1'].str.contains(primary_genre)] if primary_genre else df)
-        .pipe(lambda df: df[df['genre_2'].str.contains(secondary_genre)] if secondary_genre else df)
-        .pipe(lambda df: df[df['genre_3'].str.contains(tertiary_genre)] if tertiary_genre else df)
+        .pipe(lambda df: df[df['genre_1'].str.contains(primary_genre, na=False)] if primary_genre else df)
+        .pipe(lambda df: df[df['genre_2'].str.contains(secondary_genre, na=False)] if secondary_genre else df)
+        .pipe(lambda df: df[df['genre_3'].str.contains(tertiary_genre, na=False)] if tertiary_genre else df)
+        .pipe(lambda df: df[df['show_name'].str.contains(show_name)] if show_name else df)
     )
 
     return 'Number of rows selected: {}'.format(len(filtered_df.index))
+
+
 
 app.css.append_css({'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})
 
