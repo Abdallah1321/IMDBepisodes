@@ -41,6 +41,8 @@ ALTER TABLE episode
 SET TBLPROPERTIES ("skip.header.line.count"="1");
 ```
 
+You can use this commmand to view the items
+
 ```
 select * from episode limit 10;
 ```
