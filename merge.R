@@ -3,13 +3,11 @@ library(rvest)
 library(dplyr)
 
 df1 = read.csv('NewEpisodes.csv', head = T)
-dput(df1)
 df2 = read.csv('episodesReview.csv', head = T, )
-dput(df2)
-df2 = df2[, c("Episode.Name", "Show.Name", "Episode.Review")]
+df2 = df2[, c("show_name", "episode_name", "episodeReview")]
 
-newDF = merge(df1, df2, by = c("Episode.Name", "Show.Name"), all.x = TRUE)
+#newDF = merge(df1, df2, by = c("Episode.Name", "Show.Name"), all.x = TRUE)
 
 dfLeft = df1 %>% left_join(df2, by=c("Episode.Name", "Show.Name"))
 
-write.csv(dfLeft, "EpisodesData.csv", sep = ",", row.names = FALSE)
+#write.csv(dfLeft, "EpisodesData.csv", sep = ",", row.names = FALSE)

@@ -52,7 +52,7 @@ variable_labels = {
     'watchtime_min': 'Length (minutes)'
 }
 
-app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.JOURNAL])
 
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -76,7 +76,7 @@ suppress_callback_exceptions=True
 
 sidebar = html.Div(
     [
-        html.H2("Navbar", className="display-4"),
+        html.H2("", className="display-4"),
         html.H6(),
         dbc.Nav(
             [
@@ -122,7 +122,13 @@ def render_page_content(pathname):
                 html.A("https://github.com/Abdallah1321/IMDBepisodes", href="https://github.com/Abdallah1321/IMDBepisodes"),
                 html.Br(),
                 html.B("LinkedIn: "),
-                html.A("https://www.linkedin.com/in/abdallah-ibrahim37/", href="https://www.linkedin.com/in/abdallah-ibrahim37/", target = "_blank")
+                html.A("https://www.linkedin.com/in/abdallah-ibrahim37/", href="https://www.linkedin.com/in/abdallah-ibrahim37/", target = "_blank"),
+                html.Br(),
+                html.B("Kaggle link for Sentiment Analysis: "),
+                html.A("https://www.kaggle.com/abdallah185/sentiment-analysis-for-show-episode-reviews-imdb", href="https://www.kaggle.com/abdallah185/sentiment-analysis-for-show-episode-reviews-imdb", target="_blank"),
+                html.Br(),
+                html.B("Kaggle link for EDA: " ),
+                html.A("https://www.kaggle.com/code/abdallah185/eda-for-tv-show-episodes-imdb/notebook", href = "https://www.kaggle.com/code/abdallah185/eda-for-tv-show-episodes-imdb/notebook", target="_blank"),
                 ]
     elif pathname == "/page-1":
         return [
@@ -198,27 +204,27 @@ def render_page_content(pathname):
                     html.Label('Primary Genre'),
                     dcc.Dropdown(
                         id='genre1-dropdown',
-                        options=[
-                            {'label': str(genre), 'value': str(genre)} for genre in df.genre_1.unique()
-                        ],
-                        multi=False
+                        options=
+                            sorted([{'label': str(genre), 'value': str(genre)} for genre in df.genre_1.unique()], key = lambda x: x['label'])
+                        ,
+                        multi=False,
                     ),
                             html.Br(),
                     html.Label('Secondary Genre'),
                     dcc.Dropdown(
                         id='genre2-dropdown',
-                        options=[
-                            {'label': str(genre), 'value': str(genre)} for genre in df.genre_2.unique()
-                        ],
+                        options=
+                            sorted([{'label': str(genre), 'value': str(genre)} for genre in df.genre_2.unique()], key = lambda x: x['label'])
+                        ,
                         multi=False
                     ),
                     html.Br(),
                     html.Label('Tertiary Genre'),
                     dcc.Dropdown(
                         id='genre3-dropdown',
-                        options=[
-                            {'label': str(genre), 'value': str(genre)} for genre in df.genre_3.unique()
-                        ],
+                        options=
+                            sorted([{'label': str(genre), 'value': str(genre)} for genre in df.genre_3.unique()], key = lambda x: x['label'])
+                        ,
                         multi=False
                     ),
                     html.Br(),
