@@ -6,7 +6,7 @@ import pandas as pd
 import dash_bootstrap_components as dbc
 
 df = pd.read_csv("test.csv")
-sentimentData = pd.read_csv('sentimentData.csv')
+sentimentData = pd.read_csv('sentimentData.csv') 
 
 years = df.groupby('year_of_release')['episode_rating'].mean().reset_index()
 fig = px.scatter(years, x = 'year_of_release', y = 'episode_rating')
@@ -53,6 +53,7 @@ variable_labels = {
 }
 
 app = dash.Dash(__name__,  external_stylesheets=[dbc.themes.JOURNAL])
+server = app.server
 
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -114,7 +115,8 @@ def render_page_content(pathname):
                 html.H1("Episodes Dashboard"),
                 html.H2("Made by Abdallah"),
                 html.P("This dashboard was made for part of my big data programming project where I was tasked with collecting data and getting analytics of said data"),
-                html.P("The contents of the dashboard include static graphs, which shows analytics which was found through an exploratory data analysis. It also has an interactive graph which allows you to filter out the data you want to see, and finally data tables so you can view the data I have collected yourself and also filter through it"),
+                html.P('All the data in this dashboard was collected by me through webscraping IMDB, with both Python and R, and included the data for every episode along with their top review. Sentiment analysis was also done on the top review to determine whether the review was positive, negative, or neutral.'),
+                html.P("The contents of the dashboard include static graphs, which shows analytics which was found through an exploratory data analysis. It also has an interactive graph which allows you to filter out the data you want to see, and finally data tables so you can view the data I have collected for yourself and filter through it."),
                 html.P("This was done using dash and I hope you enjoy it :D"),
                 html.Br(),
                 html.H6("My links:"),
@@ -135,44 +137,49 @@ def render_page_content(pathname):
             html.Div([
                 html.H1('Analytics',
                         style={'textAlign':'center'}),
+                html.P('These are some graphs which I created to help visualise and give an understanding of the dataset. The graphs were created using plotly', style = {'textAlign': 'center'})
             ]),
             html.Div([
-                html.H2('Average episode rating for all shows'),
+                html.H2('Most Common Episode Rating For All Shows', style = {'textAlign': 'center'}),
+                html.P("This is a histogram which shows the counts for each episode rating and displays it so that we can see the range of what rating episodes receive.", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'avg-graph',
                     figure = fig3
                 ),
-                html.H2('Average episode rating throughout the years'),
+                html.H2('Average Episode Rating Throughout The Years', style = {'textAlign': 'center'}),
+                html.P('The scatter graph below shows the average episode rating for each year, which helps us visualise what years did better than others, or which year had the best shows.', style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = "year-graph",
                     figure = fig
                 ),
-                html.H2("Counts of primary genre for each episode"),
+                html.H2("Counts Of Primary Genre For Each Episode", style = {'textAlign': 'center'}),
+                html.P('Episodes can have up to three main genres, the primary genre, the secondary genre, and the tertiary genre. The three pie charts below show the occurents of each genre respectively.'),
                 dcc.Graph(
                     id= 'fig2-graph',
                     figure = fig2
                 ),
-                html.H2("Counts of secondary genre for each episode"),
+                html.H2("Counts Of Secondary Genre For Each Episode", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id= 'fig4-graph',
                     figure = fig4
                 ),
-                html.H2("Counts of tertiary genre for each episode"),
+                html.H2("Counts Of Tertiary Genre For Each Episode", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id= 'fig5-graph',
                     figure = fig5
                 ),
-                html.H2("Average rating for primary genres"),
+                html.H2("Average Rating For Primary Genres", style = {'textAlign': 'center'}),
+                html.P('The following line graphs show the average rating for each genre respectively.', style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'fig6-graph',
                     figure = fig6
                 ),
-                html.H2("Average rating for secondary genres"),
+                html.H2("Average rating for secondary genres", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'fig6-graph',
                     figure = fig7
                 ),
-                html.H2("Average rating for tertiary genres"),
+                html.H2("Average rating for tertiary genres", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'fig6-graph',
                     figure = fig8
@@ -208,6 +215,7 @@ def render_page_content(pathname):
                             sorted([{'label': str(genre), 'value': str(genre)} for genre in df.genre_1.unique()], key = lambda x: x['label'])
                         ,
                         multi=False,
+                        value = 'Animation',
                     ),
                             html.Br(),
                     html.Label('Secondary Genre'),
@@ -296,6 +304,7 @@ def render_page_content(pathname):
     elif pathname == "/page-3":
         return [
                 html.Div([
+                html.H1('Dataset Collected With All The Data For TV Show Episodes', style= {'textAlign': 'center'}),
                 dash_table.DataTable(
                     id='datatable-interactivity',
                     columns=[
@@ -336,6 +345,7 @@ def render_page_content(pathname):
     elif pathname == "/page-4":
                 return [
                 html.Div([
+                html.H1('Dataset Showing Sentiment Score For Each Episode Review', style= {'textAlign': 'center'}),
                 dash_table.DataTable(
                     id='datatable2-interactivity',
                     columns=[
