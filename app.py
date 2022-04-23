@@ -5,8 +5,9 @@ import plotly.express as px
 import pandas as pd
 import dash_bootstrap_components as dbc
 
+
 df = pd.read_csv("test.csv")
-sentimentData = pd.read_csv('sentimentData.csv') 
+sentimentData = pd.read_csv('sentimentData.csv')
 
 years = df.groupby('year_of_release')['episode_rating'].mean().reset_index()
 fig = px.scatter(years, x = 'year_of_release', y = 'episode_rating')
@@ -115,8 +116,8 @@ def render_page_content(pathname):
                 html.H1("Episodes Dashboard"),
                 html.H2("Made by Abdallah"),
                 html.P("This dashboard was made for part of my big data programming project where I was tasked with collecting data and getting analytics of said data"),
-                html.P('All the data in this dashboard was collected by me through webscraping IMDB, with both Python and R, and included the data for every episode along with their top review. Sentiment analysis was also done on the top review to determine whether the review was positive, negative, or neutral.'),
-                html.P("The contents of the dashboard include static graphs, which shows analytics which was found through an exploratory data analysis. It also has an interactive graph which allows you to filter out the data you want to see, and finally data tables so you can view the data I have collected for yourself and filter through it."),
+                html.P("The data in this dashboard was collected by me by webscraping IMDB, using Python and R, to get all the data for the episodes along with the top review for each episode. Sentiment analysis was also done to determine whether the review was positive, negative, or neutral."),
+                html.P("The contents of the dashboard include static graphs, which shows analytics which was found through an exploratory data analysis. It also has an interactive graph which allows you to filter out the data you want to see, and finally data tables so you can view the data I have collected yourself and also filter through it"),
                 html.P("This was done using dash and I hope you enjoy it :D"),
                 html.Br(),
                 html.H6("My links:"),
@@ -137,23 +138,22 @@ def render_page_content(pathname):
             html.Div([
                 html.H1('Analytics',
                         style={'textAlign':'center'}),
-                html.P('These are some graphs which I created to help visualise and give an understanding of the dataset. The graphs were created using plotly', style = {'textAlign': 'center'})
             ]),
             html.Div([
-                html.H2('Most Common Episode Rating For All Shows', style = {'textAlign': 'center'}),
-                html.P("This is a histogram which shows the counts for each episode rating and displays it so that we can see the range of what rating episodes receive.", style = {'textAlign': 'center'}),
+                html.H2('Occurences Of Episode Ratings For All Shows', style = {'textAlign': 'center'}),
+                html.P('This is a histogram which shows the occurences of episode ratings. This helps us visualise and see what rating range episodes tend to be in, and what is the most common episode rating. ', style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'avg-graph',
                     figure = fig3
                 ),
                 html.H2('Average Episode Rating Throughout The Years', style = {'textAlign': 'center'}),
-                html.P('The scatter graph below shows the average episode rating for each year, which helps us visualise what years did better than others, or which year had the best shows.', style = {'textAlign': 'center'}),
+                html.P('This scatter graph shows the average episode rating for each year. This lets us see which year had the best episodes.', style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = "year-graph",
                     figure = fig
                 ),
                 html.H2("Counts Of Primary Genre For Each Episode", style = {'textAlign': 'center'}),
-                html.P('Episodes can have up to three main genres, the primary genre, the secondary genre, and the tertiary genre. The three pie charts below show the occurents of each genre respectively.'),
+                html.P("Episodes can have up to three main genres, the primary genre, secondary genre, and tertiary genre. The pie charts below show the occurences of each genre respectively.", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id= 'fig2-graph',
                     figure = fig2
@@ -169,17 +169,17 @@ def render_page_content(pathname):
                     figure = fig5
                 ),
                 html.H2("Average Rating For Primary Genres", style = {'textAlign': 'center'}),
-                html.P('The following line graphs show the average rating for each genre respectively.', style = {'textAlign': 'center'}),
+                html.P("The line graphs show the average rating for each genre respectively.", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'fig6-graph',
                     figure = fig6
                 ),
-                html.H2("Average rating for secondary genres", style = {'textAlign': 'center'}),
+                html.H2("Average Rating For Secondary Genres", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'fig6-graph',
                     figure = fig7
                 ),
-                html.H2("Average rating for tertiary genres", style = {'textAlign': 'center'}),
+                html.H2("Average Rating For Tertiary Genres", style = {'textAlign': 'center'}),
                 dcc.Graph(
                     id = 'fig6-graph',
                     figure = fig8
@@ -215,7 +215,7 @@ def render_page_content(pathname):
                             sorted([{'label': str(genre), 'value': str(genre)} for genre in df.genre_1.unique()], key = lambda x: x['label'])
                         ,
                         multi=False,
-                        value = 'Animation',
+                        value = "Animation"
                     ),
                             html.Br(),
                     html.Label('Secondary Genre'),
@@ -293,7 +293,6 @@ def render_page_content(pathname):
                                 margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                                 xaxis={'title': 'Episode Rating'},
                                 yaxis={'title': 'Number of user votes'},
-                                hovermode='closest'                    
                             )
                         }
                     ),
@@ -304,7 +303,7 @@ def render_page_content(pathname):
     elif pathname == "/page-3":
         return [
                 html.Div([
-                html.H1('Dataset Collected With All The Data For TV Show Episodes', style= {'textAlign': 'center'}),
+                html.H1("Dataset With All Episodes", style = {'textAlign': 'center'}),
                 dash_table.DataTable(
                     id='datatable-interactivity',
                     columns=[
@@ -345,7 +344,7 @@ def render_page_content(pathname):
     elif pathname == "/page-4":
                 return [
                 html.Div([
-                html.H1('Dataset Showing Sentiment Score For Each Episode Review', style= {'textAlign': 'center'}),
+                html.H1("Dataset With Sentiment For Reviews", style = {'textAlign': 'center'}),
                 dash_table.DataTable(
                     id='datatable2-interactivity',
                     columns=[
@@ -385,12 +384,17 @@ def render_page_content(pathname):
         ]
 
     # If the user tries to reach a different page, return a 404 message
-    return dbc.Jumbotron(
+    return html.Div(
+        dbc.Container(
         [
-            html.H1("404: Not found", className="text-danger"),
-            html.Hr(),
-            html.P(f"The pathname {pathname} was not recognised..."),
-        ]
+            html.H1("404: Not found", className="display-3"),
+            html.Hr(className="my-2"),
+            html.P(f"The pathname {pathname} was not recognised...", className="lead"),
+        ],
+        fluid=True,
+        className="h-100 p-5 bg-light border rounded-3",
+        ),
+        className="p-3 bg-light rounded-3"
     )
 
 @app.callback(
@@ -414,8 +418,8 @@ def update_scatter_plot(selected_vote_count, selected_year_of_release, selected_
     secondary_genre = selected_genre2 or None
     tertiary_genre = selected_genre3 or None
     show_name = selected_show or None
-    x_axis = x_axis_var or 'Rating'
-    y_axis = y_axis_var or 'Votes'
+    x_axis = x_axis_var or 'episode_rating'
+    y_axis = y_axis_var or 'votes'
 
     filtered_df = (
         df.pipe(lambda df: df[df['votes'] >= nb_reviews])
