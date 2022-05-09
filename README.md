@@ -3,6 +3,10 @@ This is my big data project, which started with me scraping 60,000 records. 30,0
 
 After scraping all this data, I merged the csv file to a file with around 32,000 records, containing all the episode data as well as the reviews.
 
+The next step was cleaning the data, then commencing the analysis and visualisation so the data can be understood and explained clearly.
+
+Finally, a dashboard was created to present the data.
+
 View the dashboard for yourself!
 
 **Dashboard link:** https://abdallahsepisodes.herokuapp.com/
